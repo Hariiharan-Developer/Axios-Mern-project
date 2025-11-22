@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const validator = require('validatore')
+const validator = require('validator')
 
 //GATE-PASS Schema  :
 
@@ -11,11 +11,11 @@ const gatePassSchema = new mongoose.Schema({
         minlength:[3 , 'name must be 3 character']
     },
     phone:{
-        type:Number,
+        type:String,
         required:[true,'visitor mobile number is required'],
         validate:{
             validator:function(value){
-                return validator.isMobilPhone(value,'en-IN')
+                return validator.isMobilePhone(value,'en-IN')
             },
             message:'Invalid mobile number'
         }
@@ -32,7 +32,7 @@ const gatePassSchema = new mongoose.Schema({
         trim:true,
         enum:['Admission','Interview','Project Review','Meet Staff','Meet Student','Event','others']
     },
-    visitorAddres:{
+    visitorAddress:{
         type:String,
         required:[true,'visitors address is required'],
         trim:true
