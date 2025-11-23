@@ -3,11 +3,17 @@ const dotenv = require('dotenv').config()
 const colors = require('colors')
 const connectDb = require('./config/db')
 const gatePassRouter = require('./router/gatePass.router')
+const cors = require('cors')
 
 //MIDDLEWARES :
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cors({
+    origin:'http://localhost:5173',
+    methods:'GET,POST,PUT,DELETE',
+    credentials:true
+}))
 
 //DATABASE :
 connectDb()
