@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL:'https://gate-pass-backend-ucbn.onrender.com'
+    baseURL:'https://gate-pass-backend-ucbn.onrender.com/api'
 })
 
 //ADD AUTHORIZATION TOKEN AUTOMATICALLY :
