@@ -12,6 +12,9 @@
   border-radius: 5px;
   border:1px solid grey;
 }
+.input-group{
+  margin: 10px 0;
+}
 .form-control, .form-select{
   background-color: transparent;
 }
