@@ -3,6 +3,7 @@ const dotenv = require('dotenv').config()
 const colors = require('colors')
 const connectDb = require('./config/db')
 const gatePassRouter = require('./router/gatePass.router')
+const userRouter = require('./router/user.router')
 const cors = require('cors')
 
 //MIDDLEWARES :
@@ -20,6 +21,7 @@ connectDb()
 
 // API'S END POINT :
 app.use('/api/gate-pass',gatePassRouter)
+app.use('/api/user',userRouter)
 
 //SERVER :
 const port = process.env.PORT || 4444

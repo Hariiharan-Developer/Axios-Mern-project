@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         unique:true,
         lowercase:true,
         validate:{
-            function (value) {
+             validator : function (value) {
                 return validator.isEmail(value)
             },
             message:'invalid email format'
@@ -27,8 +27,14 @@ const userSchema = new mongoose.Schema({
         required:[true,'password is required'],
         trim:true,
         validate:{
-            function(value){
-                return validator.isStrongPassword(value)
+            validator: function(value){
+                return validator.isStrongPassword(value,{
+                    minLength:8,
+                    minLowercase:2,
+                    minNumbers:2,
+                    minSymbols:2,
+                    minUppercase:2
+                })
             },
             message:'password must be strong, password should be contains lowercase,uppercase,symbols & numbers'
         }

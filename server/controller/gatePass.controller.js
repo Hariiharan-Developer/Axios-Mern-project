@@ -1,8 +1,9 @@
 const Visitor = require('../model/gatePass.model')
+const User = require('../model/userModel')
 // 1.GET METHOD :
 const getGatePass = async(req,res)=>{
     try {
-        const visitor = await Visitor.find()
+        const visitor = await Visitor.find({user:req.user._id})
         return res.status(202).json({success:true,message:visitor})
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
@@ -17,7 +18,7 @@ const getSingleGatePass = async(req,res)=>{
         if(!phone){
             return res.status(404).json({success:false,message:'mobile number is required'})
         }
-        const findVisitor = await Visitor.find({phone})
+        const findVisitor = await Visitor.find({phone,user:req.user._id})
         if(!findVisitor){
             return res.status(404).json({success:false,message:'visitor not found'})
         }
@@ -34,7 +35,7 @@ const createGatePass = async(req,res)=>{
         if(!name  || !phone || !purpose || !visitorAddress){
             return res.status(404).json({success:false,message:'All fields are required'})
         }
-        const createVisitor = await Visitor.create({name,phone,vechileNo,purpose,visitorAddress})
+        const createVisitor = await Visitor.create({name,phone,vechileNo,purpose,visitorAddress,user:req.user._id})
         return res.status(202).json({success:true,message:'Gate-pass created',createVisitor})
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
@@ -49,11 +50,24 @@ const updateGatePass = async(req,res)=>{
         if(!name || !phone){
             return res.status(404).json({success:false,message:'name & phon-no is required'})
         }
+        const exist = await Visitor.findById(id);
+        if(!exist){
+            return res.status(404).json({success:false,message:'Not Found'})
+        }
+        const user = await User.findById(req.user._id)
+        if(!user){
+            return res.status(404).json({success:false, message:'Not Authorized no token'})
+        }
+        if(exist.user.toString() !== req.user._id.toString()){
+            return res.status(404).json({success:false,message:'Not Authorized'})
+        }
         const updatedvisitor = await Visitor.findByIdAndUpdate(id,{name,phone},{new:true})
         if(!updatedvisitor){
             return res.status(404).json({success:false,message:'invalid credantials'})
         }
+       
         return res.status(202).json({success:true,message:'gate-pass updated',updatedvisitor})
+        console.log(updatedVisitor)
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
         console.log(`GET : ${error.message}`)
@@ -63,13 +77,19 @@ const updateGatePass = async(req,res)=>{
 const deleteGatePass = async(req,res)=>{
     try {
         const {id} =req.params
-        if(!id){
-            return res.status(404).json({success:false,message:'id is required'})
+           const exist = await Visitor.findById(id)
+        if(!exist){
+            return res.status(404).json({success:false,message:'Not Found'})
         }
+        if(exist.user.toString() !== req.user._id.toString()){
+            return res.status(404).json({success:false,message:'Not Authorized'})
+        }
+        
         const deleteVisitor = await Visitor.findByIdAndDelete(id)
         if(!deleteVisitor){
             return res.status(404).json({succes:false,message:'invalid credantial'})
         }
+        
         return res.status(202).json({success:true,message:'gate-pass deleted'})
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
