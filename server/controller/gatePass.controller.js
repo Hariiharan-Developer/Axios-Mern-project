@@ -31,11 +31,11 @@ const getSingleGatePass = async(req,res)=>{
 // 2.CREATE METHOD :
 const createGatePass = async(req,res)=>{
     try {
-        const {name,vechileNo,phone,purpose,visitorAddress} =req.body
+        const {name,vechileNo,phone,purpose,visitorAddress,status,inPass} =req.body
         if(!name  || !phone || !purpose || !visitorAddress){
             return res.status(404).json({success:false,message:'All fields are required'})
         }
-        const createVisitor = await Visitor.create({name,phone,vechileNo,purpose,visitorAddress,user:req.user._id})
+        const createVisitor = await Visitor.create({name,phone,vechileNo,purpose,visitorAddress,user:req.user._id,status:'alive',inPass:new Date()})
         return res.status(202).json({success:true,message:'Gate-pass created',createVisitor})
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
@@ -46,8 +46,8 @@ const createGatePass = async(req,res)=>{
 const updateGatePass = async(req,res)=>{
     try {
         const {id} =req.params
-        const {name,phone} = req.body
-        if(!name || !phone){
+        const {name,phone,status,outPass} = req.body
+        if(!name || !phone ){
             return res.status(404).json({success:false,message:'name & phon-no is required'})
         }
         const exist = await Visitor.findById(id);
@@ -61,7 +61,7 @@ const updateGatePass = async(req,res)=>{
         if(exist.user.toString() !== req.user._id.toString()){
             return res.status(404).json({success:false,message:'Not Authorized'})
         }
-        const updatedvisitor = await Visitor.findByIdAndUpdate(id,{name,phone},{new:true})
+        const updatedvisitor = await Visitor.findByIdAndUpdate(id,{name,phone,status:'exist',outPass:new Date()},{new:true})
         if(!updatedvisitor){
             return res.status(404).json({success:false,message:'invalid credantials'})
         }
@@ -70,7 +70,7 @@ const updateGatePass = async(req,res)=>{
         console.log(updatedVisitor)
     } catch (error) {
         return res.status(404).json({success:false,message:error.message})
-        console.log(`GET : ${error.message}`)
+        console.log(`UPDATE : ${error.message}`)
     }
 }
 // 4.DELETE METHOD :

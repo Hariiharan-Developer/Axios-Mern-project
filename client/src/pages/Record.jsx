@@ -1,24 +1,23 @@
-import axios from 'axios'
 import{toast} from 'react-toastify'
 import { useEffect, useState } from 'react'
 import {Modal,Button} from 'react-bootstrap'
+import api from '../API/axios'
 const Record =()=>{
     const [data,setData] =useState([])
     const [toggle,setToggle] = useState(false)
     const [show,setShow] =useState(false)
     const [editData,setEditData] =useState({
         name:'',
-        phone:''
+        phone:'',
+        outpass:'',
+        status:''
     })
     const {name,phone} = editData
     const handleClose =()=>setShow(false)
     const handleUpdate =()=>{
         const updateData = async()=>{
             try{
-            const res = await axios.put(`http://localhost:4000/api/gate-pass/${editData._id}`,{
-                name:name,
-                phone:phone
-            })
+            const res = await api.put(`http://localhost:4000/api/gate-pass/${editData._id}`,editData)
             toast.success(res.data.message,{
                 position:'top-center',
                 autoClose:3000,
@@ -31,7 +30,7 @@ const Record =()=>{
             setShow(false)
             
         }catch(error){
-            toast.error(res.data.message,{
+            toast.error(error.response?.message?.data || 'Something went wrong',{
                 position:'top-center',
                 autoClose:3000,
                 style:{
@@ -46,7 +45,7 @@ const Record =()=>{
     }
     const getInfo = async()=>{
         try{
-            const res = await axios.get('http://localhost:4000/api/gate-pass')
+            const res = await api.get('http://localhost:4000/api/gate-pass')
                 setData(res.data.message)
         }catch(error){
             console.log(error.message)
@@ -59,7 +58,7 @@ const Record =()=>{
     const deleteFunction =(id)=>{
         const deleteData =async()=>{
             try{
-                const res =await axios.delete(`http://localhost:4000/api/gate-pass/${id}`)
+                const res =await api.delete(`http://localhost:4000/api/gate-pass/${id}`)
                 setData(prev=>prev.filter(item=>item._id !==id))
                 console.log('res:',res.data.message)
                 toast.success(res.data.message,{
@@ -96,9 +95,9 @@ const Record =()=>{
         setEditData({...editData,[e.target.name]:e.target.value})
     }
 return(
-    <>
-   <h3 className="text-center mt-2" style={{fontWeight:'800'}}>Visitor's - <span style={{color:"yellowgreen"}}>Record</span></h3>
-   <table className="table table-bordered table-striped table-hover table-sm table-responsive-sm/md">
+    < div className=' bg-dark' style={{minHeight:'100vh'}}>
+   <h3 className="text-center " style={{fontWeight:'800'}}>Visitor's - <span style={{color:"yellowgreen"}}>Record</span></h3>
+   <table className=" table table-bordered table-striped table-hover table-sm table-responsive-sm/md">
         <thead>
     <tr>
             <th>S.no</th>
@@ -106,6 +105,7 @@ return(
             <th>Date</th>
             <th>In Time</th>
             <th>Out Time</th>
+            <th>Status</th>
             <th>Visitor Name</th>
             <th>Visitor Mobile</th>
             <th>Visitord Address</th>
@@ -120,8 +120,17 @@ return(
             <td>{index+1}</td>
             <td style={{color:'yellowgreen'}}>{Date.now()}</td>
             <td>{new Date(Date.now()).toLocaleDateString()}</td>
-            <td className='text-success'>{new Date(Date.now()).toLocaleTimeString()}</td>
-            <td className='text-danger'>{new Date(Date.now()).toLocaleTimeString()}</td>
+            <td className='text-success'>{new Date(info.inPass).toLocaleTimeString([],{
+                hour:'2-digit',
+                minute:'2-digit',
+                hour12:true
+            }) }</td>
+            <td className='text-danger'>{info.outPass ? new Date(info.outPass).toLocaleTimeString([],{
+                hour:'2-digit',
+                minute:'2-digit',
+                hour12:true
+            }) :'-- --' }</td>
+            <td>{info.status === 'alive' ?(<span className='text-success'>Alive</span>):(<span className='text-danger'>Exist</span>)}</td>
             <td style={{color:'yellowgreen'}}>{info.name}</td>
             <td style={{color:'yellowgreen'}}>{info.phone}</td>
             <td>{info.visitorAddress}</td>
@@ -130,7 +139,7 @@ return(
             <td>
                 <button
                 onClick={()=>editFunction(info)}
-                className="btn btn-sm mx-1 "style={{backgroundColor:'yellowgreen'}}>Edit</button>
+                className="btn btn-sm mx-1 btn-dark">Exist</button>
             <button onClick={()=>deleteFunction(info._id)} className="btn btn-sm btn-danger">Delete</button></td>
     </tr>
         ))}
@@ -147,6 +156,13 @@ return(
         <input className='form-control' onChange={editOnchange} value={name} type="text" name='name' id='name'/>
         <label className='form-label' htmlFor="phone">Enter Mobile-number</label>
         <input className='form-control' onChange={editOnchange} value={phone} type="phone" name='phone' id='phone' />
+        <label htmlFor="outpass">Exist Time</label>
+        <input className='form-control'onChange={editOnchange} value={editData.outpass} type="time" id='outpass' />
+        <label htmlFor="status">Status</label>
+        <select className='form-select' name="status" id="stats" onChange={editOnchange}  value={editData.status}>
+            <option value="alive">Alive</option>
+            <option value="exit">Exit</option>
+        </select>
     </Modal.Body>
     <Modal.Footer>
         <Button variant='secondary' onClick={handleClose}>Cancel</Button>
@@ -154,7 +170,7 @@ return(
 
     </Modal.Footer>
    </Modal>
-    </>
+    </div>
 )
 }
 

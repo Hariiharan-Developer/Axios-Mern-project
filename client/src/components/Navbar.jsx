@@ -18,9 +18,7 @@ const Navbar = () => {
             <li className='nav-item'>
                 <Link className='nav-link' to='/inpass'><button className='btn  btn-sm' style={{background:'yellowgreen'}}>In-pass</button></Link>
             </li>
-            <li className='nav-item'>
-                <Link className='nav-link' to='/outpass'><button className='btn  btn-sm' style={{background:'yellowgreen'}}>Out-pass</button></Link>
-            </li>
+            
         </ol>
       </div>
       </div>

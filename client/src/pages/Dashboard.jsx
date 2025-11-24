@@ -1,49 +1,145 @@
-import React, { useState } from 'react'
-import '../App.css'
+import React from "react";
+import "../App.css";
+import { useFormik } from "formik";
+import { FaRegPaperPlane } from "react-icons/fa";
+import api from "../API/axios";
+import { toast } from "react-toastify";
+import { loginSchema } from "../schema/loginSchema";
+import { Link } from "react-router-dom";
+import {useNavigate} from 'react-router-dom'
 
 const Dashboard = () => {
-  const [user,setUser] =useState({
-    email:'',
-    password:''
-  })
-  const {email,password} =user
+  const navigate = useNavigate()
+  // onsubmit :
+  const onSubmit = async (value, action) => {
+    try {
+      const res = await api.post("/user/login", value);
+      localStorage.setItem("token", res.data.token);
+      navigate('/inpass')
+      toast.success(res.data.message, {
+        position: "top-center",
+        autoClose: 3000,
+        style:{
+          backgroundColor:'black',
+          color:'white',
+          borderRadius:'10px'
+        }
+      });
 
-  //onchange :
-  const onchange =(e)=>{
-    setUser({...user,[e.target.name]:e.target.value})
-  }
+      action.resetForm();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong", {
+        position: "top-center",
+        autoClose: 3000,
+        style:{
+          backgroundColor:'black',
+          color:'white',
+          borderRadius:'10px'
+        }
+      });
+    }
+    action.setSubmitting(false);
+  };
 
-  //onsubmit :
-  const onsubmit =(e)=>{
-    e.preventDefault()
-    console.log(user)
-    setUser({
-      email:'',
-      password:''
-    })
-  }
+  // formik :
+  const {
+    values,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    isSubmitting,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit,
+  });
+
   return (
-    <div className='body'>
-      <h3 className='text-center mt-3'>Welcome Back Login here !..</h3>
-      <p className='text-center mt-3'>Every day visitors visiting record are maintained </p>
-      <form onSubmit ={onsubmit}className='form container   mt-5' style={{boxShadow:'5px 7px 9px rgba(0,0,0,0.6)',borderRadius:'6px',width:'50%',padding:'30px'}}>
-        <h3 style={{ fontWeight:'800',color:'yellowgreen'}} className='text-center mt-3'>Login</h3>
-        <div className='text-center'>
-          <label className='mt-2 form-label' style={{fontWeight:'700'}} htmlFor="email">Enter E-mail</label>
-          <input placeholder='suya@gmail.com' className='form-control' onChange={onchange} style={{width:'100%'}} type="text" name='email' id='email' value={email}/>
-        </div>
-        <div className='text-center'>
-          <label className='mt-2 form-label' style={{fontWeight:'700'}} htmlFor="password">Enter Password</label>
-          <input placeholder='password' className='form-control' onChange={onchange} style={{width:'100%'}} type="password" name='password' id='password' value={password}/>
-        </div>
-        <div  className='text-center mt-2'>
-          <button type='submit' className='btn btn-large ' style={{backgroundColor:'yellowgreen'}}>Submit</button>
-        </div>
-      </form>
-      
-      
-    </div>
-  )
-}
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
+      <div
+        className="card shadow-lg p-4"
+        style={{ width: "40%", borderRadius: "12px" }}
+      >
+        <h2 className="text-center mb-3" style={{ fontWeight: 800, color: "yellowgreen" }}>
+          Login
+        </h2>
+        <p className="text-center text-secondary mb-4">
+          Sign in to continue your visitor management system
+        </p>
 
-export default Dashboard
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="email" style={{ fontWeight: 700 }}>
+              Email Address
+            </label>
+            <input
+              className={`form-control ${
+                errors.email && touched.email ? "is-invalid" : ""
+              }`}
+              type="text"
+              name="email"
+              id="email"
+              placeholder="example@gmail.com"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.email}
+            />
+            {touched.email && errors.email && (
+              <p className="invalid-feedback">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="password" style={{ fontWeight: 700 }}>
+              Password
+            </label>
+            <input
+              className={`form-control ${
+                errors.password && touched.password ? "is-invalid" : ""
+              }`}
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Enter your password"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.password}
+            />
+            {touched.password && errors.password && (
+              <p className="invalid-feedback">{errors.password}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="btn w-100 mt-2 text-white"
+            style={{
+              backgroundColor: "yellowgreen",
+              fontWeight: "700",
+              padding: "10px",
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                < FaRegPaperPlane /> Submitting...
+              </>
+            ) : (
+              "Login"
+            )}
+          </button>
+          <p className='text-center mt-3' style={{fontWeight:'600'}}>
+          Don't have an account? <Link to="/register" style={{color:'yellowgreen',textDecoration:'none'}}>Register</Link>
+        </p>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

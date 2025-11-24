@@ -1,8 +1,65 @@
 import React, { useState } from "react";
 import "../App.css";
-import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../API/axios";
+import{useFormik} from 'formik'
+import { inpassSchema } from "../schema/validationSchema";
+import {FaPaperPlane} from 'react-icons/fa'
+
+ //onsubmit :
+  const onSubmit = (value,action) => {
+    const createInfo = async () => {
+      try {
+        const res = await api.post("http://localhost:4000/api/gate-pass",{
+          name:value.name,
+          phone:value.phone,
+          visitorAddress:value.address,
+          purpose:value.purpose,
+          vechileNo:value.vechileNo
+        });
+    
+          toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 2000,
+          style: {
+            backgroundColor: "black",
+            color: "white",
+            fontSize: "18px",
+            borderRadius: "10px",
+          },
+        });
+        action.resetForm()
+      } catch (error) {
+  toast.error(error.response?.data?.message || "Something went wrong", {
+    position: "top-center",
+    autoClose: 2000,
+    style: {
+      backgroundColor: "black",
+      color: "white",
+      fontSize: "18px",
+      borderRadius: "10px",
+    },
+  });
+
+      }
+    };
+
+    createInfo();
+  };
+
+
 const Inpass = () => {
+  const {values,handleBlur,handleChange,handleSubmit,errors,touched,isSubmitting} = useFormik({
+    initialValues :{
+    name: "",
+    phone: "",
+    purpose: "",
+    address: "",
+    vechileNo: "",
+    },
+    validationSchema:inpassSchema,
+    onSubmit
+  })
   const [message, setMessage] = useState("");
   const option = [
     "Admission",
@@ -13,85 +70,13 @@ const Inpass = () => {
     "Event",
     "others",
   ];
-  const [inpass, setInpass] = useState({
-    name: "",
-    phone: "",
-    purpose: "",
-    address: "",
-    vechileNo: "",
-  });
-
-  const { name, phone, purpose, address, vechileNo } = inpass;
-  //onchange :
-  const onchange = (e) => {
-    setInpass({ ...inpass, [e.target.name]: e.target.value });
-  };
-
-  //onsubmit :
-  const onsubmit = (e) => {
-    e.preventDefault();
-    const createInfo = async () => {
-      try {
-        const res = await axios.post("http://localhost:4000/api/gate-pass", {
-          name: name,
-          phone: phone,
-          purpose: purpose,
-          visitorAddress: address,
-          vechileNo,
-        });
-    
-            toast.success(res.data.message, {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            backgroundColor: "black",
-            color: "white",
-            fontSize: "18px",
-            borderRadius: "10px",
-          },
-        });
-          
-        
-        setInpass({
-          name: "",
-          phone: "",
-          purpose: "",
-          address: "",
-          vechileNo: "",
-        });
-      } catch (error) {
-  toast.error(error.message ?error.message : "Something went wrong", {
-    position: "top-center",
-    autoClose: 2000,
-    style: {
-      backgroundColor: "black",
-      color: "white",
-      fontSize: "18px",
-      borderRadius: "10px",
-    },
-  });
-        setInpass({
-          name: "",
-          phone: "",
-          purpose: "",
-          address: "",
-          vechileNo: "",
-        });
-        console.log(error.message);
-      }
-    };
-    console.log(inpass);
-
-    createInfo();
-  };
-
   return (
-    <div className="body">
-      <h3 className="text-center mt-2" style={{ fontWeight: "800" }}>
+    <div className="body bg-dark">
+      <h3 className="text-center text-light " style={{ fontWeight: "800" }}>
         <span style={{ color: "yellowgreen" }}>In-</span>pass
       </h3>
-      <p className="text-center text-muted">Track visitors Entry by In-pass</p>
-      <form onSubmit={onsubmit} className="form">
+      <p className="text-center text-light">Track visitors Entry by In-pass</p>
+      <form onSubmit={handleSubmit} className="form bg-light">
         <div className="form-group">
           <label
             style={{ fontWeight: "700", margin: "9px" }}
@@ -102,13 +87,15 @@ const Inpass = () => {
           </label>
           <input
             placeholder="Surya"
-            onChange={onchange}
-            className="form-control"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`form-control ${errors.name && touched.name ? 'is-invalid':''}`}
             type="text"
             name="name"
             id="name"
-            value={name}
+            value={values.name}
           />
+          {errors.name && touched.name && <p className="invalid-feedback">{errors.name}</p>}
         </div>
         <div className="form-group">
           <label
@@ -120,13 +107,16 @@ const Inpass = () => {
           </label>
           <input
             placeholder="+91 0967542109"
-            onChange={onchange}
-            className="form-control"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`form-control ${errors.phone && touched.phone ? 'is-invalid':''}`}
             type="phone"
             name="phone"
             id="phone"
-            value={phone}
+            value={values.phone}
           />
+        {errors.phone && touched.phone && <p className="invalid-feedback">{errors.phone}</p>}
+
         </div>
         <div className="form-group">
           <label
@@ -138,13 +128,16 @@ const Inpass = () => {
           </label>
           <textarea
             placeholder="Chennai-60028,Tamilnadu"
-            onChange={onchange}
-            className="form-control"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`form-control ${errors.address && touched.address ? 'is-invalid':''}`}
             type="text"
             name="address"
             id="address"
-            value={address}
+            value={values.address}
           />
+        {errors.addredd && touched.address && <p className="invalid-feedback">{errors.addredd}</p>}
+
         </div>
         <div className="form-group">
           <label
@@ -155,12 +148,13 @@ const Inpass = () => {
             Enter Visiting Purpose
           </label>
           <select
-            onChange={onchange}
-            className="form-select"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`form-select ${errors.purpose && touched.purpose ? 'is-invalid' : ''}`}
             type="text"
             name="purpose"
             id="name"
-            value={purpose}
+            value={values.purpose}
           >
             <option value="">Select Purpose</option>
             {option.map((data, index) => (
@@ -169,6 +163,8 @@ const Inpass = () => {
                 </option>
             ))}
           </select>
+        {errors.purpose && touched.purpose && <p className="invalid-feedback">{errors.purpose}</p>}
+
         </div>
         <div className="form-group">
           <label
@@ -180,13 +176,16 @@ const Inpass = () => {
           </label>
           <input
             placeholder="TN38 BB1234"
-            onChange={onchange}
-            className="form-control"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`form-control ${errors.vechileNo && touched.vechileNo ? 'is-invalid':''}`}
             type="text"
             name="vechileNo"
             id="vechileNo"
-            value={vechileNo}
+            value={values.vechileNo}
           />
+        {errors.vechileNo && touched.vechileNo && <p className="invalid-feedback">{errors.vechileNo}</p>}
+
         </div>
         <div className="text-center mt-2">
           <button
@@ -194,11 +193,12 @@ const Inpass = () => {
             type="submit"
             style={{
               background: "yellowgreen",
+              color:'black',
               width: "100%",
               fontWeight: "500",
             }}
           >
-            Submit
+            {isSubmitting ?(<><FaPaperPlane/> Submiting...</>) : (<>Submit</>)}
           </button>
         </div>
       </form>

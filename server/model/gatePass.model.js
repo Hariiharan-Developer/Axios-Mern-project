@@ -37,6 +37,22 @@ const gatePassSchema = new mongoose.Schema({
         required:[true,'visitors address is required'],
         trim:true
     },
+    inPass:{
+        type:Date,
+        default:Date.now(),
+        required:true
+    },
+    outPass:{
+        type:Date,
+        default:null,
+
+    },
+    status:{
+        type:String,
+        enaum:['alive','exist'],
+        default:'alive',
+        required:true
+    },
     user:{
         type:mongoose.Schema.Types.ObjectId, ref:'User'
     }
