@@ -10,7 +10,7 @@ import {FaPaperPlane} from 'react-icons/fa'
   const onSubmit = (value,action) => {
     const createInfo = async () => {
       try {
-        const res = await api.post("http://localhost:4000/api/gate-pass",{
+        const res = await api.post("/gate-pass",{
           name:value.name,
           phone:value.phone,
           visitorAddress:value.address,

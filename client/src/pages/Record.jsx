@@ -17,7 +17,7 @@ const Record =()=>{
     const handleUpdate =()=>{
         const updateData = async()=>{
             try{
-            const res = await api.put(`http://localhost:4000/api/gate-pass/${editData._id}`,editData)
+            const res = await api.put(`/gate-pass/${editData._id}`,editData)
             toast.success(res.data.message,{
                 position:'top-center',
                 autoClose:3000,
@@ -45,7 +45,7 @@ const Record =()=>{
     }
     const getInfo = async()=>{
         try{
-            const res = await api.get('http://localhost:4000/api/gate-pass')
+            const res = await api.get('/gate-pass')
                 setData(res.data.message)
         }catch(error){
             console.log(error.message)
@@ -58,7 +58,7 @@ const Record =()=>{
     const deleteFunction =(id)=>{
         const deleteData =async()=>{
             try{
-                const res =await api.delete(`http://localhost:4000/api/gate-pass/${id}`)
+                const res =await api.delete(`/gate-pass/${id}`)
                 setData(prev=>prev.filter(item=>item._id !==id))
                 console.log('res:',res.data.message)
                 toast.success(res.data.message,{
