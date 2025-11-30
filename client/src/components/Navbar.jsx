@@ -1,29 +1,59 @@
-import React from 'react'
-import {Link}from 'react-router-dom'
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <div>
-      <div className="navbar navbar-expand-lg navbar-light bg-dark">
-        <div className='collapse navbar-collapse'>
-        <h2 className='navbar-brand text-light' style={{fontWeight:'700'}}><span style={{color:'yellowgreen'}}>
-         University  </span> Main-Gate </h2>
-        <ol className="navbar-nav ms-auto">
-            <li className='nav-item'>
-                <Link className='nav-link' to='/'><button className='btn  btn-sm' style={{background:'yellowgreen'}}>Home</button></Link>
-            </li>
-            <li className='nav-item'>
-                <Link className='nav-link' to='/record'><button className='btn  btn-sm' style={{background:'yellowgreen'}}>Track-Visitor</button></Link>
-            </li>
-            <li className='nav-item'>
-                <Link className='nav-link' to='/inpass'><button className='btn  btn-sm' style={{background:'yellowgreen'}}>In-pass</button></Link>
-            </li>
-            
-        </ol>
-      </div>
-      </div>
-    </div>
-  )
-}
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+      <div className="container-fluid">
 
-export default Navbar
+        {/* Brand */}
+        <Link className="navbar-brand fw-bold fs-4" to="/">
+          <span style={{ color: "yellowgreen" }}>University</span> Main-Gate
+        </Link>
+
+        {/* Toggler Button */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* Collapsible Menu */}
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto align-items-center">
+
+            <li className="nav-item mx-1">
+              <Link className="nav-link" to="/">
+                <button className="btn btn-sm text-dark" style={{ background: "yellowgreen", fontWeight:'600' }}>
+                  Home
+                </button>
+              </Link>
+            </li>
+
+            <li className="nav-item mx-1">
+              <Link className="nav-link" to="/record">
+                <button className="btn btn-sm text-dark" style={{ background: "yellowgreen", fontWeight:'600' }}>
+                  Track Visitor
+                </button>
+              </Link>
+            </li>
+
+            <li className="nav-item mx-1">
+              <Link className="nav-link" to="/inpass">
+                <button className="btn btn-sm text-dark" style={{ background: "yellowgreen", fontWeight:'600' }}>
+                  In-Pass
+                </button>
+              </Link>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
