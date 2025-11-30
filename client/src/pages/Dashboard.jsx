@@ -5,25 +5,26 @@ import { FaRegPaperPlane } from "react-icons/fa";
 import api from "../API/axios";
 import { toast } from "react-toastify";
 import { loginSchema } from "../schema/loginSchema";
-import { Link } from "react-router-dom";
-import {useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   // onsubmit :
   const onSubmit = async (value, action) => {
     try {
       const res = await api.post("/user/login", value);
       localStorage.setItem("token", res.data.token);
-      navigate('/inpass')
+      navigate("/inpass");
+
       toast.success(res.data.message, {
         position: "top-center",
         autoClose: 3000,
-        style:{
-          backgroundColor:'black',
-          color:'white',
-          borderRadius:'10px'
-        }
+        style: {
+          backgroundColor: "black",
+          color: "white",
+          borderRadius: "10px",
+        },
       });
 
       action.resetForm();
@@ -31,11 +32,11 @@ const Dashboard = () => {
       toast.error(error.response?.data?.message || "Something went wrong", {
         position: "top-center",
         autoClose: 3000,
-        style:{
-          backgroundColor:'black',
-          color:'white',
-          borderRadius:'10px'
-        }
+        style: {
+          backgroundColor: "black",
+          color: "white",
+          borderRadius: "10px",
+        },
       });
     }
     action.setSubmitting(false);
@@ -60,21 +61,30 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-dark px-3">
+
       <div
-        className="card shadow-lg p-4"
-        style={{ width: "40%", borderRadius: "12px" }}
+        className="card shadow-lg p-4 w-100"
+        style={{
+          maxWidth: "420px",
+          borderRadius: "14px",
+        }}
       >
-        <h2 className="text-center mb-3" style={{ fontWeight: 800, color: "yellowgreen" }}>
+        <h2
+          className="text-center mb-2"
+          style={{ fontWeight: 800, color: "yellowgreen" }}
+        >
           Login
         </h2>
+
         <p className="text-center text-secondary mb-4">
           Sign in to continue your visitor management system
         </p>
 
         <form onSubmit={handleSubmit}>
+          {/* Email */}
           <div className="mb-3">
-            <label htmlFor="email" style={{ fontWeight: 700 }}>
+            <label htmlFor="email" className="fw-bold">
               Email Address
             </label>
             <input
@@ -94,8 +104,9 @@ const Dashboard = () => {
             )}
           </div>
 
+          {/* Password */}
           <div className="mb-3">
-            <label htmlFor="password" style={{ fontWeight: 700 }}>
+            <label htmlFor="password" className="fw-bold">
               Password
             </label>
             <input
@@ -115,6 +126,7 @@ const Dashboard = () => {
             )}
           </div>
 
+          {/* Button */}
           <button
             type="submit"
             className="btn w-100 mt-2 text-white"
@@ -127,15 +139,23 @@ const Dashboard = () => {
           >
             {isSubmitting ? (
               <>
-                < FaRegPaperPlane /> Submitting...
+                <FaRegPaperPlane /> Submitting...
               </>
             ) : (
               "Login"
             )}
           </button>
-          <p className='text-center mt-3' style={{fontWeight:'600'}}>
-          Don't have an account? <Link to="/register" style={{color:'yellowgreen',textDecoration:'none'}}>Register</Link>
-        </p>
+
+          {/* Register Link */}
+          <p className="text-center mt-3 fw-semibold">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              style={{ color: "yellowgreen", textDecoration: "none" }}
+            >
+              Register
+            </Link>
+          </p>
         </form>
       </div>
     </div>
