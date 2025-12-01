@@ -36,7 +36,7 @@ const Navbar = () => {
             </li>
 
             <li className="nav-item mx-1">
-              <Link className="nav-link" to="/inpass">
+              <Link className="nav-link" to="/">
                 <button className="btn btn-sm text-dark" style={{ background: "yellowgreen", fontWeight:'600' }}>
                   In-Pass
                 </button>
