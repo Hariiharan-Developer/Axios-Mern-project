@@ -15,7 +15,7 @@ const Dashboard = () => {
     try {
       const res = await api.post("/user/login", value);
       localStorage.setItem("token", res.data.token);
-      navigate("/inpass");
+      navigate("/");
 
       toast.success(res.data.message, {
         position: "top-center",
