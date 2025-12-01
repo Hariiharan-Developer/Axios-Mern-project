@@ -25,13 +25,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-center">
 
-            <li className="nav-item mx-1">
-              <Link className="nav-link" to="/">
-                <button className="btn btn-sm text-dark" style={{ background: "yellowgreen", fontWeight:'600' }}>
-                  Home
-                </button>
-              </Link>
-            </li>
+           
 
             <li className="nav-item mx-1">
               <Link className="nav-link" to="/record">
