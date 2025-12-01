@@ -16,10 +16,10 @@ function App() {
       <ToastContainer/>
     <Navbar/>
       <Routes>
-          <Route path='/' element={<Dashboard/>}/>
+          <Route path='/login' element={<Dashboard/>}/>
           <Route path='/register' element={<Register/>}/>
 
-          <Route path='/inpass' element=
+          <Route path='/' element=
           {<ProtectedRoute>
                <Inpass/>
           </ProtectedRoute>}/>
