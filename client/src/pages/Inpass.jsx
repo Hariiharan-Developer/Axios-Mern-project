@@ -10,7 +10,7 @@ import {useNavigate} from 'react-router-dom'
 
 // onSubmit :
 const onSubmit = async (value, action) => {
-  const navigate = useNavigate()
+  
   try {
     const res = await api.post("/gate-pass", {
       name: value.name,
@@ -50,6 +50,7 @@ const onSubmit = async (value, action) => {
 };
 
 const Inpass = () => {
+  const navigate = useNavigate()
   const {
     values,
     handleBlur,
