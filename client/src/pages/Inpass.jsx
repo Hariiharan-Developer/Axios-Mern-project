@@ -1,225 +1,177 @@
 import React from "react";
 import "../App.css";
-import { toast } from "react-toastify";
-import api from "../API/axios";
 import { useFormik } from "formik";
-import { inpassSchema } from "../schema/validationSchema";
-import { FaPaperPlane } from "react-icons/fa";
-import {useNavigate} from 'react-router-dom'
+import { FaRegPaperPlane } from "react-icons/fa";
+import api from "../API/axios";
+import { toast } from "react-toastify";
+import { validationSchema } from "../schema/validationSchema";
+import { Link, useNavigate } from "react-router-dom";
 
+const Register = () => {
 
-// onSubmit :
-const onSubmit = async (value, action) => {
-  
-  try {
-    const res = await api.post("/gate-pass", {
-      name: value.name,
-      phone: value.phone,
-      visitorAddress: value.address,
-      purpose: value.purpose,
-      vechileNo: value.vechileNo,
-    });
-    navigate('record')
+  const navigate = useNavigate();
 
-    toast.success(res.data.message, {
-      position: "top-center",
-      autoClose: 2000,
-      style: {
-        backgroundColor: "black",
-        color: "white",
-        fontSize: "18px",
-        borderRadius: "10px",
-      },
-    });
+  const onSubmit = async (value, action) => {
+    try {
+      const res = await api.post("/user/register", value);
 
-    action.resetForm();
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Something went wrong", {
-      position: "top-center",
-      autoClose: 2000,
-      style: {
-        backgroundColor: "black",
-        color: "white",
-        fontSize: "18px",
-        borderRadius: "10px",
-      },
-    });
-  }
+      toast.success(res.data.message, {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          backgroundColor: "black",
+          color: "white",
+          borderRadius: "10px",
+        },
+      });
 
-  action.setSubmitting(false);
-};
+      action.resetForm();
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong", {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          backgroundColor: "black",
+          color: "white",
+          borderRadius: "10px",
+        },
+      });
+    }
+    action.setSubmitting(false);
+  };
 
-const Inpass = () => {
-  const navigate = useNavigate()
   const {
     values,
     handleBlur,
     handleChange,
     handleSubmit,
+    isSubmitting,
     errors,
     touched,
-    isSubmitting,
   } = useFormik({
     initialValues: {
       name: "",
-      phone: "",
-      purpose: "",
-      address: "",
-      vechileNo: "",
+      email: "",
+      password: "",
     },
-    validationSchema: inpassSchema,
+    validationSchema: validationSchema,
     onSubmit,
   });
 
-  const option = [
-    "Admission",
-    "Interview",
-    "Project Review",
-    "Meet Staff",
-    "Meet Student",
-    "Event",
-    "Others",
-  ];
-
   return (
-    <div className="bg-dark d-flex justify-content-center align-items-start py-4 px-3 min-vh-100">
-
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
       <div
-        className="card shadow-lg p-4 w-100"
-        style={{
-          maxWidth: "550px",
-          borderRadius: "14px",
-        }}
+        className="card shadow-lg p-4"
+        style={{ width: "40%", borderRadius: "12px" }}
       >
-        <h3 className="text-center mb-1 fw-bold" style={{ color: "yellowgreen" }}>
-          In-Pass
-        </h3>
+        <h2
+          className="text-center mb-3"
+          style={{ fontWeight: 800, color: "yellowgreen" }}
+        >
+          Register
+        </h2>
         <p className="text-center text-secondary mb-4">
-          Track visitor entry using the In-pass form
+          Create an account to continue
         </p>
 
         <form onSubmit={handleSubmit}>
 
-          {/* NAME */}
           <div className="mb-3">
-            <label className="fw-semibold mb-1">Visitor Name</label>
+            <label htmlFor="name" style={{ fontWeight: 700 }}>
+              Full Name
+            </label>
             <input
-              placeholder="Surya"
               className={`form-control ${
                 errors.name && touched.name ? "is-invalid" : ""
               }`}
+              type="text"
+              id="name"
               name="name"
-              onChange={handleChange}
-              onBlur={handleBlur}
+              placeholder="Enter your name"
               value={values.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
             />
-            {errors.name && touched.name && (
-              <div className="invalid-feedback">{errors.name}</div>
+            {touched.name && errors.name && (
+              <p className="invalid-feedback">{errors.name}</p>
             )}
           </div>
 
-          {/* PHONE */}
           <div className="mb-3">
-            <label className="fw-semibold mb-1">Phone Number</label>
+            <label htmlFor="email" style={{ fontWeight: 700 }}>
+              Email Address
+            </label>
             <input
-              placeholder="+91 9876543210"
               className={`form-control ${
-                errors.phone && touched.phone ? "is-invalid" : ""
+                errors.email && touched.email ? "is-invalid" : ""
               }`}
-              name="phone"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="example@gmail.com"
+              value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values.phone}
             />
-            {errors.phone && touched.phone && (
-              <div className="invalid-feedback">{errors.phone}</div>
+            {touched.email && errors.email && (
+              <p className="invalid-feedback">{errors.email}</p>
             )}
           </div>
 
-          {/* ADDRESS */}
           <div className="mb-3">
-            <label className="fw-semibold mb-1">Visitor Address</label>
-            <textarea
-              placeholder="Chennai - 600028, Tamil Nadu"
-              className={`form-control ${
-                errors.address && touched.address ? "is-invalid" : ""
-              }`}
-              name="address"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.address}
-              rows={2}
-            />
-            {errors.address && touched.address && (
-              <div className="invalid-feedback">{errors.address}</div>
-            )}
-          </div>
-
-          {/* PURPOSE */}
-          <div className="mb-3">
-            <label className="fw-semibold mb-1">Visiting Purpose</label>
-            <select
-              className={`form-select ${
-                errors.purpose && touched.purpose ? "is-invalid" : ""
-              }`}
-              name="purpose"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.purpose}
-            >
-              <option value="">Select Purpose</option>
-              {option.map((p, i) => (
-                <option key={i} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-            {errors.purpose && touched.purpose && (
-              <div className="invalid-feedback">{errors.purpose}</div>
-            )}
-          </div>
-
-          {/* VEHICLE NO */}
-          <div className="mb-3">
-            <label className="fw-semibold mb-1">Vehicle Number</label>
+            <label htmlFor="password" style={{ fontWeight: 700 }}>
+              Password
+            </label>
             <input
-              placeholder="TN 38 BB 1234"
               className={`form-control ${
-                errors.vechileNo && touched.vechileNo ? "is-invalid" : ""
+                errors.password && touched.password ? "is-invalid" : ""
               }`}
-              name="vechileNo"
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
-              value={values.vechileNo}
             />
-            {errors.vechileNo && touched.vechileNo && (
-              <div className="invalid-feedback">{errors.vechileNo}</div>
+            {touched.password && errors.password && (
+              <p className="invalid-feedback">{errors.password}</p>
             )}
           </div>
 
-          {/* SUBMIT BUTTON */}
           <button
+            type="submit"
             className="btn w-100 mt-2 text-white"
             style={{
-              background: "yellowgreen",
+              backgroundColor: "yellowgreen",
               fontWeight: "700",
               padding: "10px",
             }}
             disabled={isSubmitting}
-            type="submit"
           >
             {isSubmitting ? (
               <>
-                <FaPaperPlane /> Submitting...
+                <FaRegPaperPlane /> Submitting...
               </>
             ) : (
-              "Submit"
+              "Register"
             )}
           </button>
+
+          <p className="text-center mt-3" style={{ fontWeight: "600" }}>
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              style={{ color: "yellowgreen", textDecoration: "none" }}
+            >
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>
   );
 };
 
-export default Inpass;
+export default Register;
