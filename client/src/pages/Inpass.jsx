@@ -1,16 +1,51 @@
-import React, { useState } from "react";
+import React from "react";
 import "../App.css";
 import { toast } from "react-toastify";
 import api from "../API/axios";
 import { useFormik } from "formik";
 import { inpassSchema } from "../schema/validationSchema";
 import { FaPaperPlane } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+
+// onSubmit :
+const onSubmit = async (value, action) => {
+  try {
+    const res = await api.post("/gate-pass", {
+      name: value.name,
+      phone: value.phone,
+      visitorAddress: value.address,
+      purpose: value.purpose,
+      vechileNo: value.vechileNo,
+    });
+
+    toast.success(res.data.message, {
+      position: "top-center",
+      autoClose: 2000,
+      style: {
+        backgroundColor: "black",
+        color: "white",
+        fontSize: "18px",
+        borderRadius: "10px",
+      },
+    });
+
+    action.resetForm();
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Something went wrong", {
+      position: "top-center",
+      autoClose: 2000,
+      style: {
+        backgroundColor: "black",
+        color: "white",
+        fontSize: "18px",
+        borderRadius: "10px",
+      },
+    });
+  }
+
+  action.setSubmitting(false);
+};
 
 const Inpass = () => {
-  const navigate = useNavigate();
-
-  // Formik handling
   const {
     values,
     handleBlur,
@@ -19,8 +54,6 @@ const Inpass = () => {
     errors,
     touched,
     isSubmitting,
-    setSubmitting,
-    resetForm,
   } = useFormik({
     initialValues: {
       name: "",
@@ -30,47 +63,10 @@ const Inpass = () => {
       vechileNo: "",
     },
     validationSchema: inpassSchema,
-    onSubmit: async (value) => {
-      try {
-        const res = await api.post("/gate-pass", {
-          name: value.name,
-          phone: value.phone,
-          visitorAddress: value.address,
-          purpose: value.purpose,
-          vechileNo: value.vechileNo,
-        });
-
-        toast.success(res.data.message, {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            backgroundColor: "black",
-            color: "white",
-            fontSize: "18px",
-            borderRadius: "10px",
-          },
-        });
-
-        resetForm();
-        navigate("/record");
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Something went wrong", {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            backgroundColor: "black",
-            color: "white",
-            fontSize: "18px",
-            borderRadius: "10px",
-          },
-        });
-      }
-
-      setSubmitting(false);
-    },
+    onSubmit,
   });
 
-  const purposeOptions = [
+  const option = [
     "Admission",
     "Interview",
     "Project Review",
@@ -81,139 +77,131 @@ const Inpass = () => {
   ];
 
   return (
-    <div className="body bg-dark">
-      <h3 className="text-center text-light" style={{ fontWeight: "800" }}>
-        <span style={{ color: "yellowgreen" }}>In-</span>pass
-      </h3>
-      <p className="text-center text-light">Track visitors entry by In-pass</p>
+    <div className="bg-dark d-flex justify-content-center align-items-start py-4 px-3 min-vh-100">
 
-      <form onSubmit={handleSubmit} className="form bg-light">
+      <div
+        className="card shadow-lg p-4 w-100"
+        style={{
+          maxWidth: "550px",
+          borderRadius: "14px",
+        }}
+      >
+        <h3 className="text-center mb-1 fw-bold" style={{ color: "yellowgreen" }}>
+          In-Pass
+        </h3>
+        <p className="text-center text-secondary mb-4">
+          Track visitor entry using the In-pass form
+        </p>
 
-        {/* Name */}
-        <div className="form-group">
-          <label className="form-label fw-bold" htmlFor="name">
-            Enter Visitor's Name
-          </label>
-          <input
-            className={`form-control ${
-              errors.name && touched.name ? "is-invalid" : ""
-            }`}
-            type="text"
-            name="name"
-            id="name"
-            placeholder="Surya"
-            value={values.name}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          {errors.name && touched.name && (
-            <p className="invalid-feedback">{errors.name}</p>
-          )}
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        {/* Phone */}
-        <div className="form-group">
-          <label className="form-label fw-bold" htmlFor="phone">
-            Enter Visitor's Phone
-          </label>
-          <input
-            className={`form-control ${
-              errors.phone && touched.phone ? "is-invalid" : ""
-            }`}
-            type="text"
-            name="phone"
-            id="phone"
-            placeholder="+91 9876543210"
-            value={values.phone}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          {errors.phone && touched.phone && (
-            <p className="invalid-feedback">{errors.phone}</p>
-          )}
-        </div>
+          {/* NAME */}
+          <div className="mb-3">
+            <label className="fw-semibold mb-1">Visitor Name</label>
+            <input
+              placeholder="Surya"
+              className={`form-control ${
+                errors.name && touched.name ? "is-invalid" : ""
+              }`}
+              name="name"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.name}
+            />
+            {errors.name && touched.name && (
+              <div className="invalid-feedback">{errors.name}</div>
+            )}
+          </div>
 
-        {/* Address */}
-        <div className="form-group">
-          <label className="form-label fw-bold" htmlFor="address">
-            Enter Visitor's Address
-          </label>
-          <textarea
-            className={`form-control ${
-              errors.address && touched.address ? "is-invalid" : ""
-            }`}
-            name="address"
-            id="address"
-            placeholder="Chennai - 600028, Tamil Nadu"
-            value={values.address}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          {errors.address && touched.address && (
-            <p className="invalid-feedback">{errors.address}</p>
-          )}
-        </div>
+          {/* PHONE */}
+          <div className="mb-3">
+            <label className="fw-semibold mb-1">Phone Number</label>
+            <input
+              placeholder="+91 9876543210"
+              className={`form-control ${
+                errors.phone && touched.phone ? "is-invalid" : ""
+              }`}
+              name="phone"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.phone}
+            />
+            {errors.phone && touched.phone && (
+              <div className="invalid-feedback">{errors.phone}</div>
+            )}
+          </div>
 
-        {/* Purpose */}
-        <div className="form-group">
-          <label className="form-label fw-bold" htmlFor="purpose">
-            Enter Visiting Purpose
-          </label>
-          <select
-            className={`form-select ${
-              errors.purpose && touched.purpose ? "is-invalid" : ""
-            }`}
-            name="purpose"
-            id="purpose"
-            value={values.purpose}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          >
-            <option value="">Select Purpose</option>
-            {purposeOptions.map((p, i) => (
-              <option key={i} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-          {errors.purpose && touched.purpose && (
-            <p className="invalid-feedback">{errors.purpose}</p>
-          )}
-        </div>
+          {/* ADDRESS */}
+          <div className="mb-3">
+            <label className="fw-semibold mb-1">Visitor Address</label>
+            <textarea
+              placeholder="Chennai - 600028, Tamil Nadu"
+              className={`form-control ${
+                errors.address && touched.address ? "is-invalid" : ""
+              }`}
+              name="address"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.address}
+              rows={2}
+            />
+            {errors.address && touched.address && (
+              <div className="invalid-feedback">{errors.address}</div>
+            )}
+          </div>
 
-        {/* Vehicle */}
-        <div className="form-group">
-          <label className="form-label fw-bold" htmlFor="vechileNo">
-            Enter Visitor's Vehicle Number
-          </label>
-          <input
-            className={`form-control ${
-              errors.vechileNo && touched.vechileNo ? "is-invalid" : ""
-            }`}
-            type="text"
-            name="vechileNo"
-            id="vechileNo"
-            placeholder="TN38 BB1234"
-            value={values.vechileNo}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          {errors.vechileNo && touched.vechileNo && (
-            <p className="invalid-feedback">{errors.vechileNo}</p>
-          )}
-        </div>
+          {/* PURPOSE */}
+          <div className="mb-3">
+            <label className="fw-semibold mb-1">Visiting Purpose</label>
+            <select
+              className={`form-select ${
+                errors.purpose && touched.purpose ? "is-invalid" : ""
+              }`}
+              name="purpose"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.purpose}
+            >
+              <option value="">Select Purpose</option>
+              {option.map((p, i) => (
+                <option key={i} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+            {errors.purpose && touched.purpose && (
+              <div className="invalid-feedback">{errors.purpose}</div>
+            )}
+          </div>
 
-        {/* Button */}
-        <div className="text-center mt-3">
+          {/* VEHICLE NO */}
+          <div className="mb-3">
+            <label className="fw-semibold mb-1">Vehicle Number</label>
+            <input
+              placeholder="TN 38 BB 1234"
+              className={`form-control ${
+                errors.vechileNo && touched.vechileNo ? "is-invalid" : ""
+              }`}
+              name="vechileNo"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.vechileNo}
+            />
+            {errors.vechileNo && touched.vechileNo && (
+              <div className="invalid-feedback">{errors.vechileNo}</div>
+            )}
+          </div>
+
+          {/* SUBMIT BUTTON */}
           <button
-            className="btn text-white"
-            type="submit"
+            className="btn w-100 mt-2 text-white"
             style={{
               background: "yellowgreen",
-              width: "100%",
-              fontWeight: "600",
+              fontWeight: "700",
+              padding: "10px",
             }}
             disabled={isSubmitting}
+            type="submit"
           >
             {isSubmitting ? (
               <>
@@ -223,8 +211,8 @@ const Inpass = () => {
               "Submit"
             )}
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
