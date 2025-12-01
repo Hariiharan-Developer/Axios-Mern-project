@@ -5,9 +5,12 @@ import api from "../API/axios";
 import { useFormik } from "formik";
 import { inpassSchema } from "../schema/validationSchema";
 import { FaPaperPlane } from "react-icons/fa";
+import {useNavigate} from 'react-router-dom'
+
 
 // onSubmit :
 const onSubmit = async (value, action) => {
+  const navigate = useNavigate()
   try {
     const res = await api.post("/gate-pass", {
       name: value.name,
@@ -16,6 +19,7 @@ const onSubmit = async (value, action) => {
       purpose: value.purpose,
       vechileNo: value.vechileNo,
     });
+    navigate('record')
 
     toast.success(res.data.message, {
       position: "top-center",
