@@ -27,7 +27,7 @@ const Register = () => {
       })
 
       action.resetForm()
-      navigate('/inpass')
+      navigate('/')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong', {
         position: 'top-center',
